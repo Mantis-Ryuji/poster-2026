@@ -667,61 +667,61 @@ a_i \leftarrow \arg\min_{k\in\{1,\ldots,K\}} \left(1-\mathbf{S}_{ik}\right)
 
 | A1 | A2 | A3 |
 |----|----|----|
-| <img src="./images/A1_cluster_labels_latent_ckm.png"  width="310"> | <img src="./images/A2_cluster_labels_latent_ckm.png" width="310"> | <img src="./images/A3_cluster_labels_latent_ckm.png" width="310"> |
+| <img src="./images/A1_cluster_labels_latent_ckm.png"  width="300"> | <img src="./images/A2_cluster_labels_latent_ckm.png" width="300"> | <img src="./images/A3_cluster_labels_latent_ckm.png" width="300"> |
 
 **クリ**
 
 | B1 | B2 | B3 |
 |----|----|----|
-| <img src="./images/B1_cluster_labels_latent_ckm.png"  width="310"> | <img src="./images/B2_cluster_labels_latent_ckm.png"  width="310"> | <img src="./images/B3_cluster_labels_latent_ckm.png"  width="310"> |
+| <img src="./images/B1_cluster_labels_latent_ckm.png"  width="300"> | <img src="./images/B2_cluster_labels_latent_ckm.png"  width="300"> | <img src="./images/B3_cluster_labels_latent_ckm.png"  width="300"> |
 
 **ヒノキ**
 
 | C1 | C2 | C3 |
 |----|----|----|
-| <img src="./images/C1_cluster_labels_latent_ckm.png"  width="310"> | <img src="./images/C2_cluster_labels_latent_ckm.png"  width="310"> | <img src="./images/C3_cluster_labels_latent_ckm.png"  width="310"> |
+| <img src="./images/C1_cluster_labels_latent_ckm.png"  width="300"> | <img src="./images/C2_cluster_labels_latent_ckm.png"  width="300"> | <img src="./images/C3_cluster_labels_latent_ckm.png"  width="300"> |
 
 **マツ**
 
 | D1 | D2 | D3 |
 |----|----|----|
-| <img src="./images/D1_cluster_labels_latent_ckm.png"  width="310"> | <img src="./images/D2_cluster_labels_latent_ckm.png"  width="310"> | <img src="./images/D3_cluster_labels_latent_ckm.png"  width="310"> |
+| <img src="./images/D1_cluster_labels_latent_ckm.png"  width="300"> | <img src="./images/D2_cluster_labels_latent_ckm.png"  width="300"> | <img src="./images/D3_cluster_labels_latent_ckm.png"  width="300"> |
 
 **ヤマザクラ**
 
 | E1 | E2 | E3 |
 |----|----|----|
-| <img src="./images/E1_cluster_labels_latent_ckm.png"  width="310"> | <img src="./images/E2_cluster_labels_latent_ckm.png"  width="310"> | <img src="./images/E3_cluster_labels_latent_ckm.png"  width="310"> |
+| <img src="./images/E1_cluster_labels_latent_ckm.png"  width="300"> | <img src="./images/E2_cluster_labels_latent_ckm.png"  width="300"> | <img src="./images/E3_cluster_labels_latent_ckm.png"  width="300"> |
 
 **ライムウッド**
 
 | V1 | V2 | V3 |
 |----|----|----|
-| <img src="./images/V1_cluster_labels_latent_ckm.png"  width="310"> | <img src="./images/V2_cluster_labels_latent_ckm.png"  width="310"> | <img src="./images/V3_cluster_labels_latent_ckm.png"  width="310"> |
+| <img src="./images/V1_cluster_labels_latent_ckm.png"  width="300"> | <img src="./images/V2_cluster_labels_latent_ckm.png"  width="300"> | <img src="./images/V3_cluster_labels_latent_ckm.png"  width="300"> |
 
 **ハードメープル**
 
 | W1 | W2 | W3 |
 |----|----|----|
-| <img src="./images/W1_cluster_labels_latent_ckm.png"  width="310"> | <img src="./images/W2_cluster_labels_latent_ckm.png"  width="310"> | <img src="./images/W3_cluster_labels_latent_ckm.png"  width="310"> |
+| <img src="./images/W1_cluster_labels_latent_ckm.png"  width="300"> | <img src="./images/W2_cluster_labels_latent_ckm.png"  width="300"> | <img src="./images/W3_cluster_labels_latent_ckm.png"  width="300"> |
 
 **ポプラ**
 
 | X1 | X2 | X3 |
 |----|----|----|
-| <img src="./images/X1_cluster_labels_latent_ckm.png"  width="310"> | <img src="./images/X2_cluster_labels_latent_ckm.png"  width="310"> | <img src="./images/X3_cluster_labels_latent_ckm.png"  width="310"> |
+| <img src="./images/X1_cluster_labels_latent_ckm.png"  width="300"> | <img src="./images/X2_cluster_labels_latent_ckm.png"  width="300"> | <img src="./images/X3_cluster_labels_latent_ckm.png"  width="300"> |
 
 **スプルース**
 
 | Y1 | Y2 | Y3 |
 |----|----|----|
-| <img src="./images/Y1_cluster_labels_latent_ckm.png"  width="310"> | <img src="./images/Y2_cluster_labels_latent_ckm.png"  width="310"> | <img src="./images/Y3_cluster_labels_latent_ckm.png"  width="310"> |
+| <img src="./images/Y1_cluster_labels_latent_ckm.png"  width="300"> | <img src="./images/Y2_cluster_labels_latent_ckm.png"  width="300"> | <img src="./images/Y3_cluster_labels_latent_ckm.png"  width="300"> |
 
 **オーク**
 
 | Z1 | Z2 | Z3 |
 |----|----|----|
-| <img src="./images/Z1_cluster_labels_latent_ckm.png"  width="310"> | <img src="./images/Z2_cluster_labels_latent_ckm.png"  width="310"> | <img src="./images/Z3_cluster_labels_latent_ckm.png"  width="310"> |
+| <img src="./images/Z1_cluster_labels_latent_ckm.png"  width="300"> | <img src="./images/Z2_cluster_labels_latent_ckm.png"  width="300"> | <img src="./images/Z3_cluster_labels_latent_ckm.png"  width="300"> |
 
 **クラスタスペクトル**
 
