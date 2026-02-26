@@ -440,7 +440,7 @@ CLS+全トークンに位置埋め込みを加算する。
 CLS 出力（先頭トークン）を
 
 ```math
-\mathbf{h}_{{\rm cls},i}
+\mathbf{h}_{\mathrm{cls},i}
 :=
 \mathbf{H}_i^{(L)}[0]
 \in\mathbb{R}^{d_{\rm model}}
@@ -471,12 +471,12 @@ CLS 出力（先頭トークン）を
 
 ##### Projection head
 
-CLS 表現 $\mathbf{h}_{{\rm cls},i}$ を潜在表現 $\mathbf{z}_i\in\mathbb{R}^{d_z}$ に線形射影する：
+CLS 表現 $\mathbf{h}_{\mathrm{cls},i}$ を潜在表現 $\mathbf{z}_i\in\mathbb{R}^{d_z}$ に線形射影する：
 
 ```math
 \bar{\mathbf{z}_i}
 =
-\mathbf{W}_{\rm proj}\mathbf{h}_{{\rm cls},i}+\mathbf{b}_{\rm proj}
+\mathbf{W}_{\rm proj}\mathbf{h}_{\mathrm{cls},i}+\mathbf{b}_{\rm proj}
 \in\mathbb{R}^{d_z},
 \quad
 \mathbf{W}_{\rm proj}\in\mathbb{R}^{d_z\times d_{\rm model}},
