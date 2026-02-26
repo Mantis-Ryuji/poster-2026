@@ -5,8 +5,6 @@
 
 また、本ページで紹介するモデルは **PyPI で公開済み** のため、手元の Python 環境でそのまま利用できます。ただし、学習・推論にはGPU の利用を推奨します。GPU 環境が手元にない場合は、Google Colab などのクラウド実行環境を利用してください。
 
-[![PyPI version](https://img.shields.io/pypi/v/chemomae.svg)](https://pypi.org/project/chemomae/) [![Python](https://img.shields.io/pypi/pyversions/chemomae.svg)](https://pypi.org/project/chemomae/) [![torch](https://img.shields.io/badge/torch-2.6-tomato)]()
-
 - **GitHub（実装）** : [https://github.com/Mantis-Ryuji/ChemoMAE](https://github.com/Mantis-Ryuji/ChemoMAE)
 
 ## Contents
