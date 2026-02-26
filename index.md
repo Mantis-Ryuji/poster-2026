@@ -404,7 +404,7 @@ CLS+全トークンに位置埋め込みを加算する。
 このとき、位置埋め込みも同じ行を gather して
 
 ```math
-\mathbf{E}_{{\rm pos},\mathcal{V}} := \mathbf{E}_{\rm pos}\left[\{0\}\cup \mathcal{V}\right]
+\mathbf{E}_{\rm pos,\mathcal{V}} := \mathbf{E}_{\rm pos}\left[\{0\}\cup \mathcal{V}\right]
 \in\mathbb{R}^{(|\mathcal{V}|+1)\times d_{\rm model}}, \qquad
 \text{\{0\} は CLS 行のインデックス}
 ```
@@ -420,7 +420,7 @@ CLS+全トークンに位置埋め込みを加算する。
 \mathbf{T}_{\mathcal{V}}
 \end{bmatrix}
 +
-\mathbf{E}_{{\rm pos},\mathcal{V}}
+\mathbf{E}_{\rm pos,\mathcal{V}}
 \in\mathbb{R}^{(|\mathcal{V}|+1)\times d_{\rm model}}
 }
 ```
