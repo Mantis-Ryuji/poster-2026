@@ -25,27 +25,11 @@
   - [2. 位置埋め込み](#2-位置埋め込み)
   - [3. 可視部分の抽出](#3-可視部分の抽出)
   - [4. Encoder](#4-encoder)
-    - [TransformerEncoderLayer（ ``nn.TransformerEncoderLayer`` ）](#transformerencoderlayer-nntransformerencoderlayer-)
-    - [Projection head](#projection-head)
   - [5. Decoder](#5-decoder)
   - [6. Loss Function](#6-loss-function)
-    - [マスク支持子の作成](#マスク支持子の作成)
-    - [損失関数（マスク領域でのみ計算）](#損失関数マスク領域でのみ計算)
 - [教師なしセグメンテーション](#教師なしセグメンテーション)
   - [Cosine K-Means](#cosine-k-means)
 - [付録](#付録)
-  - [試験条件](#試験条件)
-  - [クスノキ](#クスノキ)
-  - [クリ](#クリ)
-  - [ヒノキ](#ヒノキ)
-  - [マツ](#マツ)
-  - [ヤマザクラ](#ヤマザクラ)
-  - [ライムウッド](#ライムウッド)
-  - [ハードメープル](#ハードメープル)
-  - [ポプラ](#ポプラ)
-  - [スプルース](#スプルース)
-  - [オーク](#オーク)
-  - [クラスタスペクトル](#クラスタスペクトル)
 
 ---
 
@@ -496,7 +480,7 @@ CLS 出力（先頭トークン）を
 
 と定義する。
 
-#### TransformerEncoderLayer（ ``nn.TransformerEncoderLayer`` ）
+**TransformerEncoderLayer（ ``nn.TransformerEncoderLayer`` ）**
 
 各層 $\ell=1,\ldots,L$ は
 
@@ -517,7 +501,7 @@ CLS 出力（先頭トークン）を
 
 最終的に $\mathbf{H}_i^{(L)}$ を得る。
 
-#### Projection head
+**Projection head**
 
 CLS 表現 $\mathbf{h}_{\mathrm{cls},i}$ を潜在表現 $\mathbf{z}_i\in\mathbb{R}^{d_z}$ に線形射影する：
 
@@ -554,7 +538,7 @@ Encoder で得た潜在表現 $\mathbf{z}_i$ から、元のスペクトル $\ma
 
 ### 6. Loss Function
 
-#### マスク支持子の作成
+**マスク支持子 $\mathbf{m}$ の作成**
 
 パッチ集合 $\mathcal{M}=\left\{1,\ldots,P\right\}\setminus\mathcal{V}$ からマスク支持子 $\mathbf{m}\in\left\{0,1\right\}^C$ を作成する。
 パッチ $j\in\left\{1,2,\ldots,P\right\}$ が覆う波長点インデックス集合を
@@ -581,7 +565,7 @@ m_c
 
 > $\mathbf{m}$ はマスクされたパッチに属する成分だけ 1 になるベクトル
 
-#### 損失関数（マスク領域でのみ計算）
+**損失関数（マスク領域でのみ計算）**
 
 元スペクトル $\mathbf{x}_i\in\mathbb{R}^C$ 、再構成 $\hat{\mathbf{x}}_i\in\mathbb{R}^C$ に対し、アダマール積 $\odot$ を用いて
 
@@ -668,7 +652,7 @@ a_i \leftarrow \arg\min_{k\in\{1,\ldots,K\}} \left(1-\mathbf{S}_{ik}\right)
 
 ## 付録
 
-### 試験条件
+**試験条件**
 
 | Temperature | t1  | t2    | t3    | t4    | t5    | t6    | t7    | t8    | t9    |
 |-------------|-----|-------|-------|-------|-------|-------|-------|-------|-------|
@@ -679,67 +663,67 @@ a_i \leftarrow \arg\min_{k\in\{1,\ldots,K\}} \left(1-\mathbf{S}_{ik}\right)
 
 (※) h: hour, d: day
 
-### クスノキ
+**クスノキ**
 
 | A1 | A2 | A3 |
 |----|----|----|
 | <img src="./images/A1_cluster_labels_latent_ckm.png"  width="310"> | <img src="./images/A2_cluster_labels_latent_ckm.png" width="310"> | <img src="./images/A3_cluster_labels_latent_ckm.png" width="310"> |
 
-### クリ
+**クリ**
 
 | B1 | B2 | B3 |
 |----|----|----|
 | <img src="./images/B1_cluster_labels_latent_ckm.png"  width="310"> | <img src="./images/B2_cluster_labels_latent_ckm.png"  width="310"> | <img src="./images/B3_cluster_labels_latent_ckm.png"  width="310"> |
 
-### ヒノキ
+**ヒノキ**
 
 | C1 | C2 | C3 |
 |----|----|----|
 | <img src="./images/C1_cluster_labels_latent_ckm.png"  width="310"> | <img src="./images/C2_cluster_labels_latent_ckm.png"  width="310"> | <img src="./images/C3_cluster_labels_latent_ckm.png"  width="310"> |
 
-### マツ
+**マツ**
 
 | D1 | D2 | D3 |
 |----|----|----|
 | <img src="./images/D1_cluster_labels_latent_ckm.png"  width="310"> | <img src="./images/D2_cluster_labels_latent_ckm.png"  width="310"> | <img src="./images/D3_cluster_labels_latent_ckm.png"  width="310"> |
 
-### ヤマザクラ
+**ヤマザクラ**
 
 | E1 | E2 | E3 |
 |----|----|----|
 | <img src="./images/E1_cluster_labels_latent_ckm.png"  width="310"> | <img src="./images/E2_cluster_labels_latent_ckm.png"  width="310"> | <img src="./images/E3_cluster_labels_latent_ckm.png"  width="310"> |
 
-### ライムウッド
+**ライムウッド**
 
 | V1 | V2 | V3 |
 |----|----|----|
 | <img src="./images/V1_cluster_labels_latent_ckm.png"  width="310"> | <img src="./images/V2_cluster_labels_latent_ckm.png"  width="310"> | <img src="./images/V3_cluster_labels_latent_ckm.png"  width="310"> |
 
-### ハードメープル
+**ハードメープル**
 
 | W1 | W2 | W3 |
 |----|----|----|
 | <img src="./images/W1_cluster_labels_latent_ckm.png"  width="310"> | <img src="./images/W2_cluster_labels_latent_ckm.png"  width="310"> | <img src="./images/W3_cluster_labels_latent_ckm.png"  width="310"> |
 
-### ポプラ
+**ポプラ**
 
 | X1 | X2 | X3 |
 |----|----|----|
 | <img src="./images/X1_cluster_labels_latent_ckm.png"  width="310"> | <img src="./images/X2_cluster_labels_latent_ckm.png"  width="310"> | <img src="./images/X3_cluster_labels_latent_ckm.png"  width="310"> |
 
-### スプルース
+**スプルース**
 
 | Y1 | Y2 | Y3 |
 |----|----|----|
 | <img src="./images/Y1_cluster_labels_latent_ckm.png"  width="310"> | <img src="./images/Y2_cluster_labels_latent_ckm.png"  width="310"> | <img src="./images/Y3_cluster_labels_latent_ckm.png"  width="310"> |
 
-### オーク
+**オーク**
 
 | Z1 | Z2 | Z3 |
 |----|----|----|
 | <img src="./images/Z1_cluster_labels_latent_ckm.png"  width="310"> | <img src="./images/Z2_cluster_labels_latent_ckm.png"  width="310"> | <img src="./images/Z3_cluster_labels_latent_ckm.png"  width="310"> |
 
-### クラスタスペクトル
+**クラスタスペクトル**
 
 - 左上：Reflectance, 右上：Reflectance(SNV), 左下：Absorbance, 右下: Absorbance(SNV)
 

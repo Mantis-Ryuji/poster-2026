@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import base64
 import html
+import unicodedata
 import mimetypes
 import re
 import sys
@@ -149,6 +150,190 @@ def _restore_math_placeholders(html_text: str, ph: _MathPlaceholders) -> str:
         out = out.replace(token, repl)
 
     return out
+
+
+def _slugify_heading_text(text: str) -> str:
+    """見出しテキストから id として使う文字列（スラッグ）を生成する。
+
+    目的
+    ----
+    - VS Code / GitHub Flavored Markdown が生成する見出しアンカーに近い規則で `id` を付与し、
+      Markdown内の `[...](#...)`（自動生成TOCを含む）が安定して飛ぶようにする。
+
+    仕様（近似）
+    ------------
+    - UnicodeをNFKC正規化し、小文字化する。
+    - 句読点・記号（Unicodeカテゴリ: P*, S*）は基本的に除去する。
+      ただし `-` と `_` は保持する（連結用）。
+    - 空白類は `-` に置換し、連続する `-` は1つに圧縮する。
+    - 先頭/末尾の `-` は除去する。
+    - 日本語など非ASCII文字は保持する（URLエンコードされればブラウザ側で一致する）。
+
+    Notes
+    -----
+    - GitHubの完全一致実装ではなく「TOCが飛ぶ」ことを最優先した実用近似である。
+    """
+    t = unicodedata.normalize("NFKC", text).strip().lower()
+
+    out_chars: list[str] = []
+    for ch in t:
+        if ch.isspace():
+            out_chars.append("-")
+            continue
+
+        if ch in {"-", "_"}:
+            out_chars.append(ch)
+            continue
+
+        cat = unicodedata.category(ch)  # e.g., 'Ll', 'Nd', 'Po', 'Sm'
+        if cat.startswith("P") or cat.startswith("S"):
+            # punctuation / symbol -> drop (., +, (), （）, ・, …, etc.)
+            continue
+
+        out_chars.append(ch)
+
+    slug = "".join(out_chars)
+    slug = re.sub(r"-{2,}", "-", slug).strip("-")
+    return slug
+
+
+class _HeadingIdInjector(HTMLParser):
+    """HTML中の見出し(h1〜h6)へ id を自動付与する。
+
+    仕様
+    ----
+    - 既に id がある見出しは変更しない。
+    - id が無い場合、見出しの表示テキスト（タグ除去後）から id を生成する。
+    - 同一 id が衝突した場合は `-2`, `-3`, ... を付与して回避する。
+    """
+
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=False)
+        self._out: list[str] = []
+        self._id_counts: dict[str, int] = {}
+
+        self._capturing: bool = False
+        self._cap_tag: str = ""
+        self._cap_attrs: list[tuple[str, str | None]] = []
+        self._cap_inner_chunks: list[str] = []
+        self._cap_text_chunks: list[str] = []
+        self._cap_has_id: bool = False
+
+    def html(self) -> str:
+        return "".join(self._out)
+
+    def _emit_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        self._out.append("<" + tag)
+        for k, v in attrs:
+            if v is None:
+                self._out.append(f" {k}")
+            else:
+                esc = (
+                    v.replace("&", "&amp;")
+                    .replace('"', "&quot;")
+                    .replace("<", "&lt;")
+                    .replace(">", "&gt;")
+                )
+                self._out.append(f' {k}="{esc}"')
+        self._out.append(">")
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        t = tag.lower()
+        if t in {"h1", "h2", "h3", "h4", "h5", "h6"} and not self._capturing:
+            self._capturing = True
+            self._cap_tag = t
+            self._cap_attrs = attrs
+            self._cap_inner_chunks = []
+            self._cap_text_chunks = []
+            self._cap_has_id = any(k.lower() == "id" for k, _ in attrs)
+            return
+
+        if self._capturing:
+            self._cap_inner_chunks.append(self.get_starttag_text()) # type: ignore
+            return
+
+        self._out.append(self.get_starttag_text()) # type: ignore
+
+    def handle_endtag(self, tag: str) -> None:
+        t = tag.lower()
+        if self._capturing and t == self._cap_tag:
+            attrs = list(self._cap_attrs)
+            if not self._cap_has_id:
+                text = "".join(self._cap_text_chunks)
+                base = _slugify_heading_text(text) or "section"
+                n = self._id_counts.get(base, 0) + 1
+                self._id_counts[base] = n
+                hid = base if n == 1 else f"{base}-{n}"
+                attrs.append(("id", hid))
+
+            self._emit_starttag(self._cap_tag, attrs)
+            self._out.append("".join(self._cap_inner_chunks))
+            self._out.append(f"</{self._cap_tag}>")
+
+            self._capturing = False
+            self._cap_tag = ""
+            self._cap_attrs = []
+            self._cap_inner_chunks = []
+            self._cap_text_chunks = []
+            self._cap_has_id = False
+            return
+
+        if self._capturing:
+            self._cap_inner_chunks.append(f"</{t}>")
+            return
+
+        self._out.append(f"</{t}>")
+
+    def handle_startendtag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        if self._capturing:
+            self._cap_inner_chunks.append(self.get_starttag_text()) # type: ignore
+            return
+        self._out.append(self.get_starttag_text()) # type: ignore
+
+    def handle_data(self, data: str) -> None:
+        if self._capturing:
+            self._cap_inner_chunks.append(data)
+            self._cap_text_chunks.append(data)
+            return
+        self._out.append(data)
+
+    def handle_entityref(self, name: str) -> None:
+        ent = f"&{name};"
+        if self._capturing:
+            self._cap_inner_chunks.append(ent)
+            self._cap_text_chunks.append(html.unescape(ent))
+            return
+        self._out.append(ent)
+
+    def handle_charref(self, name: str) -> None:
+        ent = f"&#{name};"
+        if self._capturing:
+            self._cap_inner_chunks.append(ent)
+            self._cap_text_chunks.append(html.unescape(ent))
+            return
+        self._out.append(ent)
+
+    def handle_comment(self, data: str) -> None:
+        com = f"<!--{data}-->"
+        if self._capturing:
+            self._cap_inner_chunks.append(com)
+            return
+        self._out.append(com)
+
+    def handle_decl(self, decl: str) -> None:
+        dec = f"<!{decl}>"
+        if self._capturing:
+            self._cap_inner_chunks.append(dec)
+            return
+        self._out.append(dec)
+
+
+def _inject_heading_ids(html_text: str) -> str:
+    """HTML内の見出し(h1〜h6)へ id を自動付与する。"""
+    parser = _HeadingIdInjector()
+    parser.feed(html_text)
+    parser.close()
+    return parser.html()
 
 
 def _convert_markdown_to_html(md_text: str) -> str:
@@ -333,6 +518,7 @@ def md_to_self_contained_html(
 
     body_html = _convert_markdown_to_html(md_text)
     body_html = _restore_math_placeholders(body_html, ph)
+    body_html = _inject_heading_ids(body_html)
 
     base_dir = md_path.parent.resolve()
     parser = _ImgSrcEmbeddingParser(base_dir=base_dir, strict=strict)
