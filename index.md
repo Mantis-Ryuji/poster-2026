@@ -50,54 +50,66 @@
 
 **データ前処理とデータセット作成**
 
-*  $H,W$ ：画像の高さ・幅
-*  $C$ ：波長点数（スペクトル次元）
-*  $\mathbf{I}\in\mathbb{R}^{H\times W\times C}$ ：観測強度（NIR-HSI）
-*  $\mathbf{W}_{\rm ref}\in\mathbb{R}^{1\times W\times C}$ ：白板参照
-*  $\mathbf{D}_{\rm ref}\in\mathbb{R}^{1\times W\times C}$ ：暗電流参照
-*  $\mathbf{R}\in\mathbb{R}^{H\times W\times C}$ ：反射率
-*  $\mathbf{r}_{h,w}\in\mathbb{R}^C$ ：画素 $(h,w)$ のスペクトル（ $\mathbf{R}$ のスペクトル軸ベクトル）
-*  $\mathbf{L}\in\mathbb{R}^{H\times W\times C}$ ： $\mathbf{R}$ のノルム画像
-*  $l_{h,w}=\|\mathbf{r}_{h,w}\|_2$ ：ノルム画像 $\mathbf{L}$ 画素 $(h,w)$ における画素値
-*  $t^*$ ：大津の二値化で得る閾値
-*  $\mathbf{B}={b_{h,w}}\in\left\{0,1\right\}^{H\times W}$ ：木材マスク（1=木材, 0=背景）
-*  $n\in\left\{1,\dots,N\right\}$ ： サンプル番号（ $N$ ：サンプル総数 ）
-*  $\mathcal{D}^{(n)}=\left\{(h,w)\mid b^{(n)}_{h,w}=1\right\}$ ：サンプル $n$ の木材画素集合
-*  $N_{\rm pix}=\sum_{n=1}^{N}|\mathcal{D}^{(n)}|$ ：全サンプルでの総画素数（木材領域）
-*  $\mathbf{X}_{\rm refl}\in\mathbb{R}^{N_{\rm pix}\times C}$ ：木材画素から抽出して縦連結した反射率スペクトル行列
-*  $\tilde{\mathbf{x}}_i\in\mathbb{R}^C$ ： $\mathbf{X}_{\rm refl}$ の第 $i$ 行（反射率スペクトル）
-*  $\tilde{\mu}_i,\tilde{\sigma}_i$ ： $\tilde{\mathbf{x}}_i$ の平均・標準偏差
-*  $\mathbf{x}_i\in\mathbb{R}^C$ ：SNV後のスペクトル
-*  $\mathbf{X}\in\mathbb{R}^{N_{\rm pix}\times C}$ ： $\mathbf{x}_i$ を並べたデータセット行列
+* $H$ ：画像の高さ
+* $W$ ：画像の幅
+* $C$ ：波長点数（スペクトル次元）
+* $\mathbf{I}\in\mathbb{R}^{H\times W\times C}$ ：観測強度（HSI）
+* $\mathbf{W}_{\rm ref}\in\mathbb{R}^{1\times W\times C}$ ：白板参照
+* $\mathbf{D}_{\rm ref}\in\mathbb{R}^{1\times W\times C}$ ：暗電流参照
+* $\mathbf{R}\in\mathbb{R}^{H\times W\times C}$ ：反射率画像
+* $\mathbf{r}_{h,w}\in\mathbb{R}^{C}$ ： $\mathbf{R}$ の画素 $(h,w)$ における反射率スペクトル
+* $\mathbf{L}=(l_{h,w})_{h=1,w=1}^{H,W}\in\mathbb{R}^{H\times W}$ ： $\mathbf{R}$ のノルム画像
+* $l_{h,w}=\|\mathbf{r}_{h,w}\|_2$ ：ノルム画像 $\mathbf{L}$ の画素値
+* $t^*$ ：大津の二値化で得る閾値
+* $\mathbf{B}=(b_{h,w})_{h=1,w=1}^{H,W}\in\{0,1\}^{H\times W}$ ：木材マスク（1=木材, 0=背景）
+* $n\in\{1,\ldots,N\}$ ：サンプル番号（ $N$ ：サンプル総数）
+* $\mathbf{B}^{(n)}=(b^{(n)}_{h,w})_{h=1,w=1}^{H,W}\in\{0,1\}^{H\times W}$ ：サンプル $n$ の木材マスク
+* $\mathcal{D}^{(n)}=\left\{(h,w)\mid b^{(n)}_{h,w}=1\right\}$ ：サンプル $n$ の木材画素集合
+* $\mathbf{X}^{(n)}_{\rm refl}\in\mathbb{R}^{|\mathcal{D}^{(n)}|\times C}$ ：サンプル $n$ の木材画素から抽出した反射率スペクトル行列
+* $N_{\rm pix}=\sum_{n=1}^{N}|\mathcal{D}^{(n)}|$ ：全サンプルの木材画素総数
+* $\mathbf{X}_{\rm refl}\in\mathbb{R}^{N_{\rm pix}\times C}$ ： $\mathbf{X}^{(n)}_{\rm refl}$ を縦連結した反射率データ行列
+* $\tilde{\mathbf{x}}_i\in\mathbb{R}^{C}$ ： $\mathbf{X}_{\rm refl}$ の第 $i$ 行ベクトル（反射率スペクトル）
+* $\tilde{\mu}_i,\tilde{\sigma}_i$ ： $\tilde{\mathbf{x}}_i$ の平均・標準偏差（SNV 用）
+* $\mathbf{x}_i\in\mathbb{R}^{C}$ ：SNV 後のスペクトル
+* $\mathbf{X}\in\mathbb{R}^{N_{\rm pix}\times C}$ ： $\mathbf{x}_i$ を行に並べたデータセット行列
 
-**Masked Autoencoder**
+**Masked Autoencoder（スペクトル）**
 
-*  $P$ ：パッチ数
-*  $p=C/P$ ：パッチサイズ（割り切れ前提）
-*  $\mathbf{X}^{\rm patch}_i\in\mathbb{R}^{P\times p}$ ：パッチ化スペクトル
-*  $d_{\rm model}$ ：トークン埋め込み次元
-*  $\mathbf{W}_e,\mathbf{b}_e$ ：トークン化の線形写像パラメータ
-*  $\mathbf{T}_i\in\mathbb{R}^{P\times d_{\rm model}}$ ：トークン列（ $\mathbf{T}_i=\mathbf{X}^{\rm patch}_i\mathbf{W}_e+\mathbf{1}\mathbf{b}_e^\top$ ）
-*  $\mathbf{t}_{\rm cls}$ ：CLSトークン
-*  $\mathbf{E}_{\rm pos}$ ：位置埋め込み
-*  $\mathcal{V}\subset\left\{1,\ldots,P\right\}$ ：可視パッチインデックス集合（Encoder入力に残す集合）
-*  ${\rm Enc}_\theta$ ：Encoder
-*  $\mathbf{h}_{{\rm cls},i}$ ：EncoderのCLS出力
-*  $d_z$ ：潜在次元
-*  $\mathbf{W}_{\rm proj},\mathbf{b}_{\rm proj}$ ：射影ヘッド
-*  $\mathbf{z}_i\in\mathbb{S}^{d_z-1}$ ：L2正規化した潜在（球面）
-*  ${\rm Dec}_\phi$ ：Decoder
-*  $\hat{\mathbf{x}}_i$ ：再構成スペクトル
-*  $\mathcal{M}=\left\{1,\ldots,P\right\}\setminus\mathcal{V}$ ：マスクパッチ集合
-*  $\mathbf{m}\in\left\{0,1\right\}^C$ ：波長点レベルのマスク指示子
+* $P$ ：パッチ数
+* $p=C/P$ ：パッチ長（割り切れる前提）
+* $\mathbf{x}^{\rm patch}_i\in\mathbb{R}^{P\times p}$ ： $\mathbf{x}_i$ のパッチ行列
+* $d_{\rm model}$ ：トークン埋め込み次元
+* $\mathbf{W}_e\in\mathbb{R}^{p\times d_{\rm model}},\ \mathbf{b}_e\in\mathbb{R}^{d_{\rm model}}$ ：パッチ→トークンの線形埋め込み
+* $\mathbf{T}_i\in\mathbb{R}^{P\times d_{\rm model}}$ ：トークン列
+* $\mathbf{t}_{\rm cls}\in\mathbb{R}^{d_{\rm model}}$ ：CLS トークン
+* $\mathbf{E}_{\rm pos}\in\mathbb{R}^{(P+1)\times d_{\rm model}}$ ：位置埋め込み
+* $\mathbf{U}^{\rm full}_i\in\mathbb{R}^{(P+1)\times d_{\rm model}}$ ：CLS + 全トークン列
+* $\mathcal{V}\subset\{1,\ldots,P\}$ ：可視パッチのインデックス集合
+* $\mathcal{M}=\{1,\ldots,P\}\setminus\mathcal{V}$ ：マスクパッチのインデックス集合
+* $\mathbf{U}^{\rm enc}_i\in\mathbb{R}^{(|\mathcal{V}|+1)\times d_{\rm model}}$ ：Encoder 入力（CLS + 可視トークン）
+* $L$ ：Transformer Encoder の層数
+* ${\rm Enc}_{\theta}$ ：Encoder（パラメータ $\theta$ ）
+* $\mathbf{H}_i\in\mathbb{R}^{(|\mathcal{V}|+1)\times d_{\rm model}}$ ：Encoder 出力の隠れ状態列
+* $\mathbf{h}_{{\rm cls},i}\in\mathbb{R}^{d_{\rm model}}$ ：CLS 出力（ $\mathbf{H}_i$ の先頭行）
+* $d_z$ ：潜在次元
+* $\mathbf{W}_{\rm proj}\in\mathbb{R}^{d_z\times d_{\rm model}}, \mathbf{b}_{\rm proj}\in\mathbb{R}^{d_z}$ ：射影ヘッド (projection head)
+* $\bar{\mathbf{z}}_i\in\mathbb{R}^{d_z}$ ：射影後の潜在（正規化前）
+* $\mathbf{z}_i=\bar{\mathbf{z}}_i/\|\bar{\mathbf{z}}_i\|_2\in\mathbb{S}^{d_z-1}$ ：L2 正規化した潜在（単位球面）
+* ${\rm Dec}_{\phi}$ ：Decoder（パラメータ $\phi$ ）
+* $\hat{\mathbf{x}}_i\in\mathbb{R}^{C}$ ：再構成スペクトル
+* $\mathcal{I}(j)=\{(j-1)p+1,\ldots,jp\}$ ：パッチ $j$ が覆う波長インデックス集合
+* $\mathbf{m}\in\{0,1\}^{C}$ ：波長点レベルのマスク指示子
+* $\odot$ ：アダマール積（要素ごとの積）
+* $\mathcal{L}_{\rm mask}$ ：マスク領域での再構成損失
 
 **Cosine K-Means**
 
-*  $K$ ：クラスタ数
-*  $\mathbf{a}=(a_1,\ldots,a_{N_{\rm pix}})^\top\in\{1,\ldots,K\}^{N_{\rm pix}}$ ：ラベルベクトル
-*  $\mathbf{Z}\in\mathbb{R}^{N_{\rm pix}\times {d_z}}$ ：特徴量行列
-*  $\mathbf{C}\in\mathbb{R}^{K\times d_z}$ ：クラスタ中心行列
-*  $\mathbf{S}\in\mathbb{R}^{N_{\rm pix}\times K}$ ：類似度行列
+* $K$ ：クラスタ数
+* $\mathbf{Z}\in\mathbb{R}^{N_{\rm pix}\times d_z}$ ：潜在特徴量行列（各行は $\mathbf{z}_i$ ）
+* $\mathbf{C}\in\mathbb{R}^{K\times d_z}$ ：クラスタ中心行列（各行は $\mathbf{c}_k^\top$ ）
+* $\mathbf{S}=\mathbf{Z}\mathbf{C}^\top\in\mathbb{R}^{N_{\rm pix}\times K}$ ：類似度行（ $\mathbf{S}_{ik}=\mathbf{z}_i^\top\mathbf{c}_k$ ）
+* $\mathbf{a}=(a_1,\ldots,a_{N_{\rm pix}})^\top\in\{1,\ldots,K\}^{N_{\rm pix}}$ ：クラスタ割当ラベルベクトル
+* $\mathcal{A}_k=\{i\in{1,\ldots,N_{\rm pix}}\mid a_i=k\}$ ：クラスタ $k$ のラベルインデックス集合
 
 </details><br>
 
@@ -257,9 +269,7 @@ N_{\rm pix}=\sum_{n=1}^{N}|\mathcal{D}^{(n)}|
 \mathbf{x}_i
 =
 \frac{\tilde{\mathbf{x}}_i-\tilde{\mu}_i\mathbf{1}}{\tilde{\sigma}_i}
-\in\mathbb{R}^{C},
-\qquad
-(\mathbf{1}\in\mathbb{R}^{C}:\text{全要素が1のベクトル})
+\in\mathbb{R}^{C}
 ```
 
 で与える。この $\mathbf{x}_i$ を行として並べた行列を $\mathbf{X}$ とする：
@@ -342,7 +352,7 @@ x_{i,c}=\frac{\tilde{x}_{i,c}-\tilde{\mu}_i}{\tilde{\sigma}_i}
 \sqrt{\sum_{c=1}^{C}\left(\frac{\tilde{x}_{i,c}-\tilde{\mu}_i}{\tilde{\sigma}_i}\right)^2}
 ```
 
-よって、(1) を用いて
+よって、 $(1)$ を用いて
 
 ```math
 \boxed{\|\mathbf{x}_i\|_2=\sqrt{C-1}}
@@ -380,14 +390,14 @@ p = \frac{C}{P} \quad (\text{割り切れる前提})
 とする。パッチ行列を
 
 ```math
-\mathbf{X}^{\rm patch}_i \in \mathbb{R}^{P \times p}
+\mathbf{x}^{\rm patch}_i \in \mathbb{R}^{P \times p}
 ```
 
 と定義する。<br>
 トークン化（線形写像）：
 
 ```math
-\mathbf{T}_i = \mathbf{X}^{\rm patch}_i \mathbf{W}_e + \mathbf{1} \mathbf{b}_e^\top
+\mathbf{T}_i = \mathbf{x}^{\rm patch}_i \mathbf{W}_e + \mathbf{1} \mathbf{b}_e^\top
 \in \mathbb{R}^{P \times d_{\rm model}},
 \quad
 \mathbf{W}_e\in\mathbb{R}^{p \times d_{\rm model}},
@@ -424,7 +434,7 @@ CLS+全トークンに位置埋め込みを加算する。
 
 ### 3. 可視部分の抽出
 
-可視インデックス集合を $\mathcal{V}\subset\left\{1,\ldots,P\right\}$ を用いて可視トークンを
+可視パッチインデックス集合を $\mathcal{V}\subset\left\{1,\ldots,P\right\}$ を用いて可視トークンを
 
 ```math
 \mathbf{T}_{\mathcal{V}} = \mathbf{T}_i[\mathcal{V}] \in\mathbb{R}^{|\mathcal{V}|\times d_{\rm model}}
@@ -537,7 +547,7 @@ Encoder で得た潜在表現 $\mathbf{z}_i$ から、元のスペクトル $\ma
 
 **マスク支持子 $\mathbf{m}$ の作成**
 
-パッチ集合 $\mathcal{M}=\left\{1,\ldots,P\right\}\setminus\mathcal{V}$ からマスク支持子 $\mathbf{m}\in\left\{0,1\right\}^C$ を作成する。<br>
+マスクパッチインデックス集合 $\mathcal{M}=\left\{1,\ldots,P\right\}\setminus\mathcal{V}$ からマスク支持子 $\mathbf{m}\in\left\{0,1\right\}^C$ を作成する。<br>
 パッチ $j\in\left\{1,2,\ldots,P\right\}$ が覆う波長点インデックス集合を
 
 ```math
@@ -584,7 +594,7 @@ MAE により得られた潜在表現を Cosine K-Means でクラスタリング
 
 ### Cosine K-Means
 
-$\mathbf{X}\in\mathbb{R}^{N_{\rm pix}\times C}$ を **全可視**（マスクなし）で学習済み Encoder に入力して得た特徴量行列を $\mathbf{Z}\in\mathbb{R}^{N_{\rm pix}\times d_z}$ とする。<br>
+$\mathbf{X}\in\mathbb{R}^{N_{\rm pix}\times C}$ を **全可視**（マスクなし）で学習済み Encoder に入力して得た潜在特徴量行列を $\mathbf{Z}\in\mathbb{R}^{N_{\rm pix}\times d_z}$ とする。<br>
 各行ベクトル $\mathbf{z}_i$ は $\ell_2$ 正規化されており $\|\mathbf{z}_i\|_2=1$ を満たすとする。
 
 クラスタ数を $K$ とし、クラスタ中心を行に並べた行列を
@@ -604,7 +614,7 @@ $\mathbf{X}\in\mathbb{R}^{N_{\rm pix}\times C}$ を **全可視**（マスクな
 
 で表す。
 
-割当はラベルベクトル $\mathbf{a}=(a_1,\ldots,a_{N_{\rm pix}})^\top\in\left\{1,\ldots,K\right\}^{N_{\rm pix}}$ で表し、 $a_i=k$ が「点 $i$ をクラスタ $k$ に割り当てる」ことを意味する。
+クラスタ割当ラベルベクトルは $\mathbf{a}=(a_1,\ldots,a_{N_{\rm pix}})^\top\in\left\{1,\ldots,K\right\}^{N_{\rm pix}}$ で表し、 $a_i=k$ が「点 $i$ をクラスタ $k$ に割り当てる」ことを意味する。
 
 このとき目的関数はコサイン距離により
 
@@ -633,7 +643,7 @@ a_i \leftarrow \arg\min_{k\in\{1,\ldots,K\}} \left(1-\mathbf{S}_{ik}\right)
 次に中心更新（M-step）は、クラスタ $k$ の割当集合（インデックスの部分集合）
 
 ```math
-\mathcal{S}_k=\{i\in\{1,\ldots,N_{\rm pix}\}\mid a_i=k\}
+\mathcal{A}_k=\{i\in\{1,\ldots,N_{\rm pix}\}\mid a_i=k\}
 ```
 
 を用いて
@@ -641,7 +651,7 @@ a_i \leftarrow \arg\min_{k\in\{1,\ldots,K\}} \left(1-\mathbf{S}_{ik}\right)
 ```math
 \bar{\mathbf{c}}_k
 =
-\frac{1}{|\mathcal{S}_k|}\sum_{i\in\mathcal{S}_k}\mathbf{z}_i,
+\frac{1}{|\mathcal{A}_k|}\sum_{i\in\mathcal{A}_k}\mathbf{z}_i,
 \qquad
 \mathbf{c}_k \leftarrow \frac{\bar{\mathbf{c}}_k}{\|\bar{\mathbf{c}}_k\|_2}
 ```
